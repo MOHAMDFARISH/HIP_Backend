@@ -1,0 +1,5 @@
+{
+  "name": "Book Pre-Order Admin",
+  "description": "A minimal admin backend for managing book pre-orders. It allows viewing all orders, updating their status, and viewing payment receipts. The application connects to an existing Supabase database.",
+  "requestFramePermissions": []
+}
