@@ -1,6 +1,5 @@
-import { OrderStatus } from './types';
 
-export const PAGE_SIZE = 10;
+import { OrderStatus } from './types';
 
 export const STATUS_OPTIONS: { value: OrderStatus; label: string }[] = [
   { value: OrderStatus.PendingPayment, label: 'Pending Payment' },

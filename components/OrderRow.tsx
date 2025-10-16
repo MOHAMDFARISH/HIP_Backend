@@ -1,23 +1,58 @@
+
 import React, { useState } from 'react';
-import { Order, OrderStatus } from '../types';
+import { Order, OrderStatus, EmailContent } from '../types';
+import { useGemini } from '../hooks/useGemini';
 import StatusDropdown from './StatusDropdown';
 import ReceiptModal from './ReceiptModal';
-import { Eye, CheckCircle, XCircle, FileText } from 'lucide-react';
+import NotificationPreviewModal from './NotificationPreviewModal';
+import { Eye, CheckCircle, XCircle, Mail, Loader2 } from 'lucide-react';
 
 interface OrderRowProps {
   order: Order;
   onStatusUpdate: (orderId: string, status: OrderStatus) => Promise<boolean>;
-  onViewDetails: (order: Order) => void;
 }
 
-const OrderRow: React.FC<OrderRowProps> = ({ order, onStatusUpdate, onViewDetails }) => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isUpdating, setIsUpdating] = useState(false);
+const NOTIFIABLE_STATUSES: OrderStatus[] = [
+  OrderStatus.Confirmed,
+  OrderStatus.ReadyForPickup,
+  OrderStatus.Shipped,
+  OrderStatus.Cancelled,
+];
+
+const OrderRow: React.FC<OrderRowProps> = ({ order, onStatusUpdate }) => {
+  const [isReceiptModalOpen, setIsReceiptModalOpen] = useState(false);
+  const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
+  const [emailContent, setEmailContent] = useState<EmailContent | null>(null);
+  const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
+  
+  const { generateOrderStatusEmail, loading: isGeneratingEmail, error: geminiError } = useGemini();
 
   const handleStatusChange = async (newStatus: OrderStatus) => {
-    setIsUpdating(true);
+    setIsUpdatingStatus(true);
     await onStatusUpdate(order.id, newStatus);
-    setIsUpdating(false);
+    setIsUpdatingStatus(false);
+  };
+
+  const handleNotifyClick = async () => {
+    if (!NOTIFIABLE_STATUSES.includes(order.status)) {
+        alert("This order status is not notifiable.");
+        return;
+    }
+    const content = await generateOrderStatusEmail(order.customer_name, order.status, order.tracking_number);
+    if (content) {
+        setEmailContent(content);
+        setIsNotificationModalOpen(true);
+    } else {
+        alert(`Error generating email: ${geminiError || 'Unknown error'}`);
+    }
+  };
+
+  const handleSendNotification = () => {
+    // In a real app, this would trigger an API call to a backend to send the email.
+    console.log("Sending email:", emailContent);
+    alert(`Email notification sent to ${order.customer_email}`);
+    setIsNotificationModalOpen(false);
+    setEmailContent(null);
   };
   
   const formattedDate = new Date(order.created_at).toLocaleDateString('en-US', {
@@ -25,6 +60,8 @@ const OrderRow: React.FC<OrderRowProps> = ({ order, onStatusUpdate, onViewDetail
     month: 'short',
     day: 'numeric',
   });
+
+  const isNotifiable = NOTIFIABLE_STATUSES.includes(order.status);
 
   return (
     <>
@@ -48,36 +85,47 @@ const OrderRow: React.FC<OrderRowProps> = ({ order, onStatusUpdate, onViewDetail
           <StatusDropdown
             currentStatus={order.status}
             onChange={handleStatusChange}
-            disabled={isUpdating}
+            disabled={isUpdatingStatus}
           />
         </td>
         <td className="px-6 py-4 text-center">
-          {order.receipt_file_url && (
-            <button
-              onClick={() => setIsModalOpen(true)}
-              className="inline-flex items-center gap-1 px-3 py-1 text-xs font-medium text-blue-700 bg-blue-100 rounded-full hover:bg-blue-200"
-              aria-label="View Receipt"
-            >
-              <Eye className="w-3 h-3"/>
-              Receipt
-            </button>
-          )}
-        </td>
-        <td className="px-6 py-4 text-center">
-            <button
-              onClick={() => onViewDetails(order)}
-              className="inline-flex items-center gap-1 px-3 py-1 text-xs font-medium text-gray-700 bg-gray-100 rounded-full hover:bg-gray-200"
-              aria-label="View Order Details"
-            >
-              <FileText className="w-3 h-3"/>
-              Details
-            </button>
+            <div className="flex items-center justify-center gap-2">
+                {order.receipt_file_url && (
+                    <button
+                        onClick={() => setIsReceiptModalOpen(true)}
+                        className="inline-flex items-center gap-1 px-3 py-1 text-xs font-medium text-blue-700 bg-blue-100 rounded-full hover:bg-blue-200"
+                        title="View Receipt"
+                    >
+                        <Eye className="w-3 h-3"/>
+                        Receipt
+                    </button>
+                )}
+                <button
+                    onClick={handleNotifyClick}
+                    disabled={!isNotifiable || isGeneratingEmail}
+                    className="inline-flex items-center justify-center p-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-full disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-200"
+                    title={isNotifiable ? "Notify Customer" : "Status not notifiable"}
+                    aria-label="Notify Customer"
+                >
+                    {isGeneratingEmail ? <Loader2 className="w-4 h-4 animate-spin" /> : <Mail className="w-4 h-4" />}
+                </button>
+            </div>
         </td>
       </tr>
-      {isModalOpen && order.receipt_file_url && (
+      {isReceiptModalOpen && order.receipt_file_url && (
         <ReceiptModal
           imageUrl={order.receipt_file_url}
-          onClose={() => setIsModalOpen(false)}
+          onClose={() => setIsReceiptModalOpen(false)}
+        />
+      )}
+      {isNotificationModalOpen && emailContent && (
+        <NotificationPreviewModal
+            isOpen={isNotificationModalOpen}
+            onClose={() => setIsNotificationModalOpen(false)}
+            onSend={handleSendNotification}
+            recipientEmail={order.customer_email}
+            subject={emailContent.subject}
+            body={emailContent.body}
         />
       )}
     </>

@@ -15,12 +15,17 @@ export interface Order {
   tracking_number: string;
   customer_name: string;
   customer_email: string;
-  customer_phone: string | null;
-  shipping_address: string | null;
+  customer_phone: string;
+  shipping_address: string;
   number_of_copies: number;
   join_event: boolean;
   bring_guest: boolean;
   receipt_file_url: string | null;
   status: OrderStatus;
   updated_at: string;
+}
+
+export interface EmailContent {
+  subject: string;
+  body: string;
 }
