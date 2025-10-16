@@ -1,8 +1,9 @@
-
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useOrders } from '../hooks/useOrders';
 import OrderTable from './OrderTable';
 import { Search, LogOut, BookOpen, BarChart } from 'lucide-react';
+import { STATUS_OPTIONS } from '../constants';
+import { OrderStatus } from '../types';
 
 interface DashboardPageProps {
   onLogout: () => void;
@@ -11,14 +12,15 @@ interface DashboardPageProps {
 const DashboardPage: React.FC<DashboardPageProps> = ({ onLogout }) => {
   const { orders, loading, error, fetchOrders, updateOrderStatus } = useOrders();
   const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState<OrderStatus | 'all'>('all');
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
-      fetchOrders(searchTerm);
+      fetchOrders(searchTerm, statusFilter);
     }, 300);
 
     return () => clearTimeout(delayDebounceFn);
-  }, [searchTerm, fetchOrders]);
+  }, [searchTerm, statusFilter, fetchOrders]);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
@@ -26,6 +28,11 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onLogout }) => {
 
   const totalOrders = orders.length;
   const pendingOrders = orders.filter(o => o.status === 'pending' || o.status === 'pending_payment').length;
+
+  const filterOptions: { value: OrderStatus | 'all'; label: string }[] = [
+    { value: 'all', label: 'All' },
+    ...STATUS_OPTIONS,
+  ];
 
   return (
     <div className="p-4 sm:p-6 lg:p-8">
@@ -69,7 +76,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onLogout }) => {
       </div>
 
 
-      <div className="p-4 mb-6 bg-white rounded-lg shadow">
+      <div className="p-6 mb-6 bg-white rounded-lg shadow">
         <div className="relative">
           <Search className="absolute w-5 h-5 text-gray-400 left-3 top-1/2 -translate-y-1/2" />
           <input
@@ -79,6 +86,22 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onLogout }) => {
             onChange={handleSearchChange}
             className="w-full py-2 pl-10 pr-4 text-gray-900 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-secondary"
           />
+        </div>
+        <div className="flex flex-wrap items-center gap-2 mt-4">
+          <span className="text-sm font-medium text-gray-600">Filter by status:</span>
+          {filterOptions.map((option) => (
+            <button
+              key={option.value}
+              onClick={() => setStatusFilter(option.value)}
+              className={`px-3 py-1 text-sm font-medium rounded-full transition-colors ${
+                statusFilter === option.value
+                  ? 'bg-brand-primary text-white'
+                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              }`}
+            >
+              {option.label}
+            </button>
+          ))}
         </div>
       </div>
       

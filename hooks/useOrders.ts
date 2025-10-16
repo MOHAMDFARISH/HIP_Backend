@@ -1,4 +1,3 @@
-
 import { useState, useCallback, useEffect } from 'react';
 import { supabase } from '../services/supabase';
 import { Order, OrderStatus } from '../types';
@@ -8,7 +7,7 @@ export const useOrders = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchOrders = useCallback(async (searchTerm: string = '') => {
+  const fetchOrders = useCallback(async (searchTerm: string = '', statusFilter: OrderStatus | 'all' = 'all') => {
     setLoading(true);
     setError(null);
     try {
@@ -19,6 +18,10 @@ export const useOrders = () => {
 
       if (searchTerm) {
         query = query.or(`tracking_number.ilike.%${searchTerm}%,customer_email.ilike.%${searchTerm}%`);
+      }
+
+      if (statusFilter !== 'all') {
+        query = query.eq('status', statusFilter);
       }
 
       const { data, error } = await query;
