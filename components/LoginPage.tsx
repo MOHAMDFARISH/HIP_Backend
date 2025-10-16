@@ -1,3 +1,5 @@
+// FIX: Add reference to vite client types to resolve import.meta.env error
+/// <reference types="vite/client" />
 
 import React, { useState, useCallback } from 'react';
 import { ShieldCheck } from 'lucide-react';
@@ -11,8 +13,8 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  const adminUser = process.env.REACT_APP_ADMIN_USER;
-  const adminPass = process.env.REACT_APP_ADMIN_PASS;
+  const adminUser = import.meta.env.VITE_ADMIN_USER;
+  const adminPass = import.meta.env.VITE_ADMIN_PASS;
 
   const handleSubmit = useCallback((e: React.FormEvent) => {
     e.preventDefault();

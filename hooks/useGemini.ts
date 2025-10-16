@@ -1,17 +1,11 @@
-
 import { useState, useCallback } from 'react';
 import { GoogleGenAI, Type } from "@google/genai";
 import { OrderStatus, EmailContent } from '../types';
 import { STATUS_OPTIONS } from '../constants';
 
-const API_KEY = process.env.API_KEY;
-
-if (!API_KEY) {
-  // This check is for development; in production, the env var should be set.
-  console.warn("API_KEY environment variable not found.");
-}
-
-const ai = new GoogleGenAI({ apiKey: API_KEY! });
+// FIX: Adhering to @google/genai guidelines to use process.env.API_KEY for the API key.
+// This also resolves the TypeScript error on `import.meta.env`.
+const ai = new GoogleGenAI({ apiKey: process.env.API_KEY! });
 
 const getStatusLabel = (status: OrderStatus): string => {
     return STATUS_OPTIONS.find(opt => opt.value === status)?.label || status;
