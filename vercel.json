@@ -1,7 +1,10 @@
 {
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "framework": "vite",
   "rewrites": [
     {
-      "source": "/((?!.*\\.(?:js|ts|tsx|jsx|css|json|ico|png|jpg|jpeg|svg|woff|woff2|ttf|eot)$).*)",
+      "source": "/(.*)",
       "destination": "/index.html"
     }
   ]
