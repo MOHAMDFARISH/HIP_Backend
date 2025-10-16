@@ -1,11 +1,22 @@
+// Fix: Add triple-slash directive to include Vite's client types.
+/// <reference types="vite/client" />
+
 import { useState, useCallback } from 'react';
 import { GoogleGenAI, Type } from "@google/genai";
 import { OrderStatus, EmailContent } from '../types';
 import { STATUS_OPTIONS } from '../constants';
 
-// FIX: Adhering to @google/genai guidelines to use process.env.API_KEY for the API key.
-// This also resolves the TypeScript error on `import.meta.env`.
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY! });
+// Fix: Per coding guidelines, the API key must be obtained from the environment.
+// For Vite, this is import.meta.env.VITE_API_KEY.
+const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+
+if (!apiKey) {
+  // Fix: The environment variable name was updated.
+  throw new Error("VITE_GEMINI_API_KEY environment variable not set");
+}
+
+// Fix: Per coding guidelines, initialize with apiKey in an object.
+const ai = new GoogleGenAI({ apiKey: apiKey });
 
 const getStatusLabel = (status: OrderStatus): string => {
     return STATUS_OPTIONS.find(opt => opt.value === status)?.label || status;
@@ -38,22 +49,25 @@ export const useGemini = () => {
     }
 
     const prompt = `
-        You are an assistant for a bookstore.
-        Generate a concise, friendly, and professional email to a customer about their book pre-order status update.
+        Generate an email to a customer about their book pre-order status update.
         The customer's name is ${customerName}.
         The book's title is "${bookTitle}".
         ${details}
         
-        Your response must be a JSON object with two keys: "subject" and "body".
+        The response must be a JSON object with two keys: "subject" and "body".
         The "subject" should be a short, clear subject line for the email, including the book title.
         The "body" should be the email content. Start the body directly with the greeting (e.g., "Hi ${customerName},"). Do not wrap the response in markdown backticks.
       `;
+    
+    const systemInstruction = "You are an assistant for a bookstore. You generate concise, friendly, and professional emails.";
 
     try {
       const response = await ai.models.generateContent({
         model: 'gemini-2.5-flash',
-        contents: prompt,
+        contents: [{ parts: [{ text: prompt }] }],
         config: {
+          // Fix: Added system instruction for better model guidance.
+          systemInstruction: systemInstruction,
           responseMimeType: "application/json",
           responseSchema: {
             type: Type.OBJECT,
@@ -66,6 +80,7 @@ export const useGemini = () => {
         },
       });
 
+      // Fix: Use response.text directly to parse as per guidelines.
       const emailContent = JSON.parse(response.text);
       return emailContent;
     } catch (err: any) {

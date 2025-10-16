@@ -1,4 +1,4 @@
-// FIX: Add reference to vite client types to resolve import.meta.env error
+// Fix: Add triple-slash directive to include Vite's client types.
 /// <reference types="vite/client" />
 
 import React, { useState, useCallback } from 'react';
