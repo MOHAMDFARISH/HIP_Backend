@@ -5,7 +5,8 @@ import { useGemini } from '../hooks/useGemini';
 import StatusDropdown from './StatusDropdown';
 import ReceiptModal from './ReceiptModal';
 import NotificationPreviewModal from './NotificationPreviewModal';
-import { Eye, CheckCircle, XCircle, Mail, Loader2 } from 'lucide-react';
+import OrderDetailsModal from './OrderDetailsModal';
+import { Eye, CheckCircle, XCircle, Mail, Loader2, FileText } from 'lucide-react';
 
 interface OrderRowProps {
   order: Order;
@@ -22,9 +23,10 @@ const NOTIFIABLE_STATUSES: OrderStatus[] = [
 const OrderRow: React.FC<OrderRowProps> = ({ order, onStatusUpdate }) => {
   const [isReceiptModalOpen, setIsReceiptModalOpen] = useState(false);
   const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
+  const [isOrderDetailsModalOpen, setIsOrderDetailsModalOpen] = useState(false);
   const [emailContent, setEmailContent] = useState<EmailContent | null>(null);
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
-  
+
   const { generateOrderStatusEmail, loading: isGeneratingEmail, error: geminiError } = useGemini();
 
   const handleStatusChange = async (newStatus: OrderStatus) => {
@@ -90,6 +92,14 @@ const OrderRow: React.FC<OrderRowProps> = ({ order, onStatusUpdate }) => {
         </td>
         <td className="px-6 py-4 text-center">
             <div className="flex items-center justify-center gap-2">
+                <button
+                    onClick={() => setIsOrderDetailsModalOpen(true)}
+                    className="inline-flex items-center justify-center p-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-full hover:bg-gray-200"
+                    title="View Order Details"
+                    aria-label="View Order Details"
+                >
+                    <FileText className="w-4 h-4" />
+                </button>
                 {order.receipt_file_url && (
                     <button
                         onClick={() => setIsReceiptModalOpen(true)}
@@ -126,6 +136,12 @@ const OrderRow: React.FC<OrderRowProps> = ({ order, onStatusUpdate }) => {
             recipientEmail={order.customer_email}
             subject={emailContent.subject}
             body={emailContent.body}
+        />
+      )}
+      {isOrderDetailsModalOpen && (
+        <OrderDetailsModal
+          order={order}
+          onClose={() => setIsOrderDetailsModalOpen(false)}
         />
       )}
     </>
