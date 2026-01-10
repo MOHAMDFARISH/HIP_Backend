@@ -88,3 +88,43 @@ export interface Review {
   created_at: string;
   updated_at: string | null;
 }
+
+export interface Gift {
+  id: string;
+  recipient_name: string;
+  recipient_title: string | null;
+  organization: string | null;
+  number_of_books: number;
+  date_gifted: string;
+  occasion: string | null;
+  notes: string | null;
+  created_at: string;
+  updated_at: string | null;
+}
+
+export interface ConsignmentShop {
+  id: string;
+  shop_name: string;
+  location: string;
+  contact_person: string | null;
+  contact_phone: string | null;
+  contact_email: string | null;
+  books_placed: number;
+  books_sold: number;
+  books_remaining: number;
+  last_payment_date: string | null;
+  total_revenue: number;
+  notes: string | null;
+  created_at: string;
+  updated_at: string | null;
+}
+
+export interface InventoryStats {
+  totalOrders: number;
+  totalBooksSold: number;
+  totalBooksGifted: number;
+  totalBooksInConsignment: number;
+  totalBooksInInventory: number;
+  pendingOrders: number;
+  revenueFromConsignment: number;
+}

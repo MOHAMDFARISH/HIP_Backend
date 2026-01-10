@@ -1,22 +1,28 @@
 import React, { useState } from 'react';
-import { LogOut, BookOpen, Package, FileText, Video, MessageSquare } from 'lucide-react';
+import { LogOut, BookOpen, Package, FileText, Video, MessageSquare, BarChart3, Gift, Store } from 'lucide-react';
 import OrdersManagement from './OrdersManagement';
 import BlogPostsManagement from './BlogPostsManagement';
 import MediaManagement from './MediaManagement';
 import ReviewsManagement from './ReviewsManagement';
+import InventoryDashboard from './InventoryDashboard';
+import GiftsManagement from './GiftsManagement';
+import ConsignmentManagement from './ConsignmentManagement';
 
 interface DashboardPageProps {
   onLogout: () => void;
 }
 
-type TabType = 'orders' | 'blog' | 'media' | 'reviews';
+type TabType = 'inventory' | 'orders' | 'gifts' | 'consignment' | 'blog' | 'media' | 'reviews';
 
 const DashboardPage: React.FC<DashboardPageProps> = ({ onLogout }) => {
-  const [activeTab, setActiveTab] = useState<TabType>('orders');
+  const [activeTab, setActiveTab] = useState<TabType>('inventory');
 
   const tabs = [
+    { id: 'inventory' as TabType, label: 'Inventory', icon: BarChart3 },
     { id: 'orders' as TabType, label: 'Orders', icon: Package },
-    { id: 'blog' as TabType, label: 'Blog Posts', icon: FileText },
+    { id: 'gifts' as TabType, label: 'Gifts', icon: Gift },
+    { id: 'consignment' as TabType, label: 'Consignment', icon: Store },
+    { id: 'blog' as TabType, label: 'Blog', icon: FileText },
     { id: 'media' as TabType, label: 'Media', icon: Video },
     { id: 'reviews' as TabType, label: 'Reviews', icon: MessageSquare },
   ];
@@ -63,7 +69,10 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onLogout }) => {
         </nav>
 
         <div>
+          {activeTab === 'inventory' && <InventoryDashboard />}
           {activeTab === 'orders' && <OrdersManagement />}
+          {activeTab === 'gifts' && <GiftsManagement />}
+          {activeTab === 'consignment' && <ConsignmentManagement />}
           {activeTab === 'blog' && <BlogPostsManagement />}
           {activeTab === 'media' && <MediaManagement />}
           {activeTab === 'reviews' && <ReviewsManagement />}
