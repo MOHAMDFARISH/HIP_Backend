@@ -1,118 +1,73 @@
-import React, { useState, useEffect } from 'react';
-import { useOrders } from '../hooks/useOrders';
-import OrderTable from './OrderTable';
-import { Search, LogOut, BookOpen, BarChart } from 'lucide-react';
-import { STATUS_OPTIONS } from '../constants';
-import { OrderStatus } from '../types';
+import React, { useState } from 'react';
+import { LogOut, BookOpen, Package, FileText, Video, MessageSquare } from 'lucide-react';
+import OrdersManagement from './OrdersManagement';
+import BlogPostsManagement from './BlogPostsManagement';
+import MediaManagement from './MediaManagement';
+import ReviewsManagement from './ReviewsManagement';
 
 interface DashboardPageProps {
   onLogout: () => void;
 }
 
+type TabType = 'orders' | 'blog' | 'media' | 'reviews';
+
 const DashboardPage: React.FC<DashboardPageProps> = ({ onLogout }) => {
-  const { orders, loading, error, fetchOrders, updateOrderStatus } = useOrders();
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState<OrderStatus | 'all'>('all');
+  const [activeTab, setActiveTab] = useState<TabType>('orders');
 
-  useEffect(() => {
-    const delayDebounceFn = setTimeout(() => {
-      fetchOrders(searchTerm, statusFilter);
-    }, 300);
-
-    return () => clearTimeout(delayDebounceFn);
-  }, [searchTerm, statusFilter, fetchOrders]);
-
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
-  };
-
-  const totalOrders = orders.length;
-  const pendingOrders = orders.filter(o => o.status === 'pending' || o.status === 'pending_payment').length;
-
-  const filterOptions: { value: OrderStatus | 'all'; label: string }[] = [
-    { value: 'all', label: 'All' },
-    ...STATUS_OPTIONS,
+  const tabs = [
+    { id: 'orders' as TabType, label: 'Orders', icon: Package },
+    { id: 'blog' as TabType, label: 'Blog Posts', icon: FileText },
+    { id: 'media' as TabType, label: 'Media', icon: Video },
+    { id: 'reviews' as TabType, label: 'Reviews', icon: MessageSquare },
   ];
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8">
-      <header className="flex flex-col items-center justify-between gap-4 pb-6 mb-6 border-b border-gray-200 sm:flex-row">
-        <div className="flex items-center gap-3">
-          <BookOpen className="w-8 h-8 text-brand-primary" />
-          <h1 className="text-3xl font-bold text-gray-800">Pre-Order Dashboard</h1>
+    <div className="min-h-screen bg-gray-50">
+      <header className="bg-white border-b border-gray-200 shadow-sm">
+        <div className="px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            <div className="flex items-center gap-3">
+              <BookOpen className="w-8 h-8 text-brand-primary" />
+              <h1 className="text-2xl font-bold text-gray-800">Content Management System</h1>
+            </div>
+            <button
+              onClick={onLogout}
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-red-600 bg-red-100 rounded-md hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+            >
+              <LogOut className="w-4 h-4" />
+              Logout
+            </button>
+          </div>
         </div>
-        <button
-          onClick={onLogout}
-          className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-red-600 bg-red-100 rounded-md hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-        >
-          <LogOut className="w-4 h-4" />
-          Logout
-        </button>
       </header>
 
-      <div className="grid grid-cols-1 gap-6 mb-6 md:grid-cols-2">
-        <div className="p-6 bg-white rounded-lg shadow">
-            <div className="flex items-center gap-4">
-                <div className="p-3 bg-blue-100 rounded-full">
-                    <BarChart className="w-6 h-6 text-blue-600" />
-                </div>
-                <div>
-                    <p className="text-sm font-medium text-gray-500">Total Orders</p>
-                    <p className="text-2xl font-semibold text-gray-900">{loading ? '...' : totalOrders}</p>
-                </div>
-            </div>
-        </div>
-        <div className="p-6 bg-white rounded-lg shadow">
-            <div className="flex items-center gap-4">
-                <div className="p-3 bg-yellow-100 rounded-full">
-                    <BarChart className="w-6 h-6 text-yellow-600" />
-                </div>
-                <div>
-                    <p className="text-sm font-medium text-gray-500">Pending Actions</p>
-                    <p className="text-2xl font-semibold text-gray-900">{loading ? '...' : pendingOrders}</p>
-                </div>
-            </div>
-        </div>
-      </div>
+      <div className="px-4 sm:px-6 lg:px-8 py-6">
+        <nav className="flex space-x-4 mb-6 bg-white rounded-lg shadow p-2">
+          {tabs.map((tab) => {
+            const Icon = tab.icon;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex items-center gap-2 px-4 py-2 rounded-md font-medium transition-colors ${
+                  activeTab === tab.id
+                    ? 'bg-brand-primary text-white'
+                    : 'text-gray-700 hover:bg-gray-100'
+                }`}
+              >
+                <Icon className="w-5 h-5" />
+                {tab.label}
+              </button>
+            );
+          })}
+        </nav>
 
-
-      <div className="p-6 mb-6 bg-white rounded-lg shadow">
-        <div className="relative">
-          <Search className="absolute w-5 h-5 text-gray-400 left-3 top-1/2 -translate-y-1/2" />
-          <input
-            type="text"
-            placeholder="Search by Tracking Number or Email..."
-            value={searchTerm}
-            onChange={handleSearchChange}
-            className="w-full py-2 pl-10 pr-4 text-gray-900 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-secondary"
-          />
+        <div>
+          {activeTab === 'orders' && <OrdersManagement />}
+          {activeTab === 'blog' && <BlogPostsManagement />}
+          {activeTab === 'media' && <MediaManagement />}
+          {activeTab === 'reviews' && <ReviewsManagement />}
         </div>
-        <div className="flex flex-wrap items-center gap-2 mt-4">
-          <span className="text-sm font-medium text-gray-600">Filter by status:</span>
-          {filterOptions.map((option) => (
-            <button
-              key={option.value}
-              onClick={() => setStatusFilter(option.value)}
-              className={`px-3 py-1 text-sm font-medium rounded-full transition-colors ${
-                statusFilter === option.value
-                  ? 'bg-brand-primary text-white'
-                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-              }`}
-            >
-              {option.label}
-            </button>
-          ))}
-        </div>
-      </div>
-      
-      {error && <div className="p-4 mb-4 text-red-700 bg-red-100 rounded-md">{error}</div>}
-      
-      <div className="bg-white rounded-lg shadow">
-        <OrderTable
-          orders={orders}
-          loading={loading}
-          onStatusUpdate={updateOrderStatus}
-        />
       </div>
     </div>
   );

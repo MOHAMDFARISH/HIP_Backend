@@ -29,3 +29,62 @@ export interface EmailContent {
   subject: string;
   body: string;
 }
+
+export interface BlogPost {
+  id: string;
+  title: string;
+  slug: string;
+  excerpt: string;
+  content: string | null;
+  featured_image: string | null;
+  author: string;
+  published_date: string;
+  updated_date: string | null;
+  is_external: boolean;
+  external_url: string | null;
+  external_source: string | null;
+  tags: string[];
+  meta_description: string;
+  meta_keywords: string[];
+  read_time_minutes: number | null;
+  is_published: boolean;
+  views_count: number;
+  created_at: string;
+  post_type: string;
+  content_blocks: any | null;
+}
+
+export interface MediaItem {
+  id: string;
+  title: string;
+  description: string | null;
+  media_type: string;
+  source_type: string;
+  embed_url: string | null;
+  external_url: string | null;
+  thumbnail_url: string | null;
+  source_name: string | null;
+  published_date: string | null;
+  duration_minutes: number | null;
+  is_featured: boolean;
+  is_published: boolean;
+  display_order: number;
+  views_count: number;
+  created_at: string;
+  updated_at: string | null;
+}
+
+export interface Review {
+  id: string;
+  reviewer_name: string;
+  reviewer_title: string | null;
+  review_text: string;
+  rating: number | null;
+  reviewer_photo: string | null;
+  reviewer_location: string | null;
+  is_featured: boolean;
+  is_published: boolean;
+  display_order: number;
+  created_at: string;
+  updated_at: string | null;
+}
