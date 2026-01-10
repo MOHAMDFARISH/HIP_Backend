@@ -85,10 +85,52 @@ export const useOrders = () => {
     }
   }, [fetchOrders]);
 
+  const updateOrder = useCallback(async (orderId: string, updates: Partial<Order>): Promise<boolean> => {
+    try {
+      const { error } = await supabase
+        .from('orders')
+        .update({ ...updates, updated_at: new Date().toISOString() })
+        .eq('id', orderId);
+
+      if (error) {
+        throw error;
+      }
+
+      setOrders(prevOrders =>
+        prevOrders.map(order =>
+          order.id === orderId ? { ...order, ...updates } : order
+        )
+      );
+      return true;
+    } catch (err: any) {
+      setError(err.message || 'Failed to update order.');
+      return false;
+    }
+  }, []);
+
+  const deleteOrder = useCallback(async (orderId: string): Promise<boolean> => {
+    try {
+      const { error } = await supabase
+        .from('orders')
+        .delete()
+        .eq('id', orderId);
+
+      if (error) {
+        throw error;
+      }
+
+      setOrders(prevOrders => prevOrders.filter(order => order.id !== orderId));
+      return true;
+    } catch (err: any) {
+      setError(err.message || 'Failed to delete order.');
+      return false;
+    }
+  }, []);
+
   useEffect(() => {
     fetchOrders();
   }, [fetchOrders]);
 
 
-  return { orders, loading, error, fetchOrders, updateOrderStatus, createOrder };
+  return { orders, loading, error, fetchOrders, updateOrderStatus, createOrder, updateOrder, deleteOrder };
 };

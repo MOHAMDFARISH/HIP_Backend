@@ -6,11 +6,13 @@ import StatusDropdown from './StatusDropdown';
 import ReceiptModal from './ReceiptModal';
 import NotificationPreviewModal from './NotificationPreviewModal';
 import OrderDetailsModal from './OrderDetailsModal';
-import { Eye, CheckCircle, XCircle, Mail, Loader2, FileText } from 'lucide-react';
+import { Eye, CheckCircle, XCircle, Mail, Loader2, FileText, Edit2, Trash2, DollarSign } from 'lucide-react';
 
 interface OrderRowProps {
   order: Order;
   onStatusUpdate: (orderId: string, status: OrderStatus) => Promise<boolean>;
+  onDeleteOrder: (orderId: string) => Promise<void>;
+  onEditPrice: (order: Order) => void;
 }
 
 const NOTIFIABLE_STATUSES: OrderStatus[] = [
@@ -20,7 +22,7 @@ const NOTIFIABLE_STATUSES: OrderStatus[] = [
   OrderStatus.Cancelled,
 ];
 
-const OrderRow: React.FC<OrderRowProps> = ({ order, onStatusUpdate }) => {
+const OrderRow: React.FC<OrderRowProps> = ({ order, onStatusUpdate, onDeleteOrder, onEditPrice }) => {
   const [isReceiptModalOpen, setIsReceiptModalOpen] = useState(false);
   const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
   const [isOrderDetailsModalOpen, setIsOrderDetailsModalOpen] = useState(false);
@@ -56,7 +58,13 @@ const OrderRow: React.FC<OrderRowProps> = ({ order, onStatusUpdate }) => {
     setIsNotificationModalOpen(false);
     setEmailContent(null);
   };
-  
+
+  const handleDelete = async () => {
+    if (window.confirm(`Are you sure you want to delete order ${order.tracking_number}? This action cannot be undone.`)) {
+      await onDeleteOrder(order.id);
+    }
+  };
+
   const formattedDate = new Date(order.created_at).toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'short',
@@ -84,6 +92,16 @@ const OrderRow: React.FC<OrderRowProps> = ({ order, onStatusUpdate }) => {
         </td>
         <td className="px-6 py-4 text-center">{order.number_of_copies}</td>
         <td className="px-6 py-4">
+          <div className="text-green-600 font-medium">
+            ${order.price_per_book?.toFixed(2) || '0.00'}
+          </div>
+        </td>
+        <td className="px-6 py-4">
+          <div className="text-green-600 font-semibold">
+            ${order.total_price?.toFixed(2) || '0.00'}
+          </div>
+        </td>
+        <td className="px-6 py-4">
           <StatusDropdown
             currentStatus={order.status}
             onChange={handleStatusChange}
@@ -91,7 +109,7 @@ const OrderRow: React.FC<OrderRowProps> = ({ order, onStatusUpdate }) => {
           />
         </td>
         <td className="px-6 py-4 text-center">
-            <div className="flex items-center justify-center gap-2">
+            <div className="flex items-center justify-center gap-2 flex-wrap">
                 <button
                     onClick={() => setIsOrderDetailsModalOpen(true)}
                     className="inline-flex items-center justify-center p-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-full hover:bg-gray-200"
@@ -99,6 +117,14 @@ const OrderRow: React.FC<OrderRowProps> = ({ order, onStatusUpdate }) => {
                     aria-label="View Order Details"
                 >
                     <FileText className="w-4 h-4" />
+                </button>
+                <button
+                    onClick={() => onEditPrice(order)}
+                    className="inline-flex items-center justify-center p-2 text-sm font-medium text-blue-700 bg-blue-100 rounded-full hover:bg-blue-200"
+                    title="Edit Price"
+                    aria-label="Edit Price"
+                >
+                    <Edit2 className="w-4 h-4" />
                 </button>
                 {order.receipt_file_url && (
                     <button
@@ -118,6 +144,14 @@ const OrderRow: React.FC<OrderRowProps> = ({ order, onStatusUpdate }) => {
                     aria-label="Notify Customer"
                 >
                     {isGeneratingEmail ? <Loader2 className="w-4 h-4 animate-spin" /> : <Mail className="w-4 h-4" />}
+                </button>
+                <button
+                    onClick={handleDelete}
+                    className="inline-flex items-center justify-center p-2 text-sm font-medium text-red-700 bg-red-100 rounded-full hover:bg-red-200"
+                    title="Delete Order"
+                    aria-label="Delete Order"
+                >
+                    <Trash2 className="w-4 h-4" />
                 </button>
             </div>
         </td>
