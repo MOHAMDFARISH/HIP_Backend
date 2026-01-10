@@ -48,7 +48,7 @@ export const useOrders = () => {
       if (error) {
         throw error;
       }
-      
+
       setOrders(prevOrders =>
         prevOrders.map(order =>
           order.id === orderId ? { ...order, status } : order
@@ -60,11 +60,77 @@ export const useOrders = () => {
       return false;
     }
   }, []);
-  
+
+  const createOrder = useCallback(async (order: Partial<Order>): Promise<boolean> => {
+    try {
+      // Generate tracking number if not provided
+      if (!order.tracking_number) {
+        const timestamp = Date.now();
+        order.tracking_number = `MANUAL-${timestamp}`;
+      }
+
+      const { error } = await supabase
+        .from('orders')
+        .insert([order]);
+
+      if (error) {
+        throw error;
+      }
+
+      await fetchOrders();
+      return true;
+    } catch (err: any) {
+      setError(err.message || 'Failed to create order.');
+      return false;
+    }
+  }, [fetchOrders]);
+
+  const updateOrder = useCallback(async (orderId: string, updates: Partial<Order>): Promise<boolean> => {
+    try {
+      const { error } = await supabase
+        .from('orders')
+        .update({ ...updates, updated_at: new Date().toISOString() })
+        .eq('id', orderId);
+
+      if (error) {
+        throw error;
+      }
+
+      setOrders(prevOrders =>
+        prevOrders.map(order =>
+          order.id === orderId ? { ...order, ...updates } : order
+        )
+      );
+      return true;
+    } catch (err: any) {
+      setError(err.message || 'Failed to update order.');
+      return false;
+    }
+  }, []);
+
+  const deleteOrder = useCallback(async (orderId: string): Promise<boolean> => {
+    try {
+      const { error } = await supabase
+        .from('orders')
+        .delete()
+        .eq('id', orderId);
+
+      if (error) {
+        throw error;
+      }
+
+      setOrders(prevOrders => prevOrders.filter(order => order.id !== orderId));
+      return true;
+    } catch (err: any) {
+      setError(err.message || 'Failed to delete order.');
+      return false;
+    }
+  }, []);
+
   useEffect(() => {
     fetchOrders();
   }, [fetchOrders]);
 
 
-  return { orders, loading, error, fetchOrders, updateOrderStatus };
+  return { orders, loading, error, fetchOrders, updateOrderStatus, createOrder, updateOrder, deleteOrder };
 };

@@ -7,6 +7,8 @@ interface OrderTableProps {
   orders: Order[];
   loading: boolean;
   onStatusUpdate: (orderId: string, status: OrderStatus) => Promise<boolean>;
+  onDeleteOrder: (orderId: string) => Promise<void>;
+  onEditPrice: (order: Order) => void;
 }
 
 const LoadingSkeleton: React.FC = () => (
@@ -24,7 +26,7 @@ const LoadingSkeleton: React.FC = () => (
     </>
 );
 
-const OrderTable: React.FC<OrderTableProps> = ({ orders, loading, onStatusUpdate }) => {
+const OrderTable: React.FC<OrderTableProps> = ({ orders, loading, onStatusUpdate, onDeleteOrder, onEditPrice }) => {
   return (
     <div className="overflow-x-auto">
       <table className="min-w-full text-sm text-left text-gray-500">
@@ -34,6 +36,8 @@ const OrderTable: React.FC<OrderTableProps> = ({ orders, loading, onStatusUpdate
             <th scope="col" className="px-6 py-3">Customer</th>
             <th scope="col" className="px-6 py-3">Event</th>
             <th scope="col" className="px-6 py-3">Copies</th>
+            <th scope="col" className="px-6 py-3">Price/Book</th>
+            <th scope="col" className="px-6 py-3">Total</th>
             <th scope="col" className="px-6 py-3">Status</th>
             <th scope="col" className="px-6 py-3 text-center">Actions</th>
           </tr>
@@ -43,11 +47,17 @@ const OrderTable: React.FC<OrderTableProps> = ({ orders, loading, onStatusUpdate
             <LoadingSkeleton />
           ) : orders.length > 0 ? (
             orders.map(order => (
-              <OrderRow key={order.id} order={order} onStatusUpdate={onStatusUpdate} />
+              <OrderRow
+                key={order.id}
+                order={order}
+                onStatusUpdate={onStatusUpdate}
+                onDeleteOrder={onDeleteOrder}
+                onEditPrice={onEditPrice}
+              />
             ))
           ) : (
             <tr>
-              <td colSpan={6} className="py-8 text-center text-gray-500">
+              <td colSpan={8} className="py-8 text-center text-gray-500">
                 No orders found.
               </td>
             </tr>
