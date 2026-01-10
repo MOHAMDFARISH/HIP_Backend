@@ -23,6 +23,8 @@ export interface Order {
   receipt_file_url: string | null;
   status: OrderStatus;
   updated_at: string;
+  price_per_book: number;
+  total_price: number;
 }
 
 export interface EmailContent {
@@ -100,6 +102,9 @@ export interface Gift {
   notes: string | null;
   created_at: string;
   updated_at: string | null;
+  price_per_book: number;
+  total_price: number;
+  is_sale: boolean;
 }
 
 export interface ConsignmentShop {
@@ -114,9 +119,19 @@ export interface ConsignmentShop {
   books_remaining: number;
   last_payment_date: string | null;
   total_revenue: number;
+  price_per_book: number;
   notes: string | null;
   created_at: string;
   updated_at: string | null;
+}
+
+export interface InventoryStock {
+  id: string;
+  books_in_stock: number;
+  last_updated: string;
+  updated_by: string | null;
+  notes: string | null;
+  created_at: string;
 }
 
 export interface InventoryStats {
@@ -124,7 +139,11 @@ export interface InventoryStats {
   totalBooksSold: number;
   totalBooksGifted: number;
   totalBooksInConsignment: number;
-  totalBooksInInventory: number;
+  totalBooksInStock: number;
+  totalBooksDistributed: number;
   pendingOrders: number;
+  revenueFromOrders: number;
+  revenueFromGifts: number;
   revenueFromConsignment: number;
+  totalRevenue: number;
 }
