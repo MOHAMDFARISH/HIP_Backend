@@ -254,7 +254,7 @@ const OrdersManagement: React.FC = () => {
                     />
                   </div>
                   <div>
-                    <label className="block mb-1 text-sm font-medium text-gray-700">Price Per Book ($)</label>
+                    <label className="block mb-1 text-sm font-medium text-gray-700">Price Per Book (Rf)</label>
                     <input
                       type="number"
                       min="0"
@@ -269,7 +269,7 @@ const OrdersManagement: React.FC = () => {
                     />
                   </div>
                   <div>
-                    <label className="block mb-1 text-sm font-medium text-gray-700">Total Price ($)</label>
+                    <label className="block mb-1 text-sm font-medium text-gray-700">Total Price (Rf)</label>
                     <input
                       type="number"
                       min="0"
@@ -372,7 +372,7 @@ const OrdersManagement: React.FC = () => {
                   </div>
                   <div>
                     <label className="block mb-1 text-sm font-medium text-gray-700">
-                      Price Per Book ($) *
+                      Price Per Book (Rf) *
                     </label>
                     <input
                       type="number"
@@ -390,7 +390,7 @@ const OrdersManagement: React.FC = () => {
                   </div>
                   <div>
                     <label className="block mb-1 text-sm font-medium text-gray-700">
-                      Total Price ($)
+                      Total Price (Rf)
                     </label>
                     <input
                       type="number"
