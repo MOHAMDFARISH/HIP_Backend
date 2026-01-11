@@ -30,10 +30,10 @@ export const useInventory = () => {
 
       if (ordersError) throw ordersError;
 
-      // Fetch gifts data with pricing
+      // Fetch gifts data (gifts are always free, no pricing needed)
       const { data: gifts, error: giftsError } = await supabase
         .from('gifts')
-        .select('number_of_books, total_price, is_sale');
+        .select('number_of_books');
 
       if (giftsError) throw giftsError;
 
@@ -62,16 +62,15 @@ export const useInventory = () => {
       const revenueFromOrders = orders?.reduce((sum, order) => sum + parseFloat(order.total_price?.toString() || '0'), 0) || 0;
 
       const totalBooksGifted = gifts?.reduce((sum, gift) => sum + gift.number_of_books, 0) || 0;
-      const revenueFromGifts = gifts?.reduce((sum, gift) => {
-        // Only count revenue from gifts marked as sales (discounted sales)
-        return gift.is_sale ? sum + parseFloat(gift.total_price?.toString() || '0') : sum;
-      }, 0) || 0;
+      // Gifts are always free, so no revenue from gifts
+      const revenueFromGifts = 0;
 
       const totalBooksInConsignment = shops?.reduce((sum, shop) => sum + shop.books_remaining, 0) || 0;
       const revenueFromConsignment = shops?.reduce((sum, shop) => sum + parseFloat(shop.total_revenue.toString()), 0) || 0;
 
       const totalBooksDistributed = totalBooksSold + totalBooksGifted + totalBooksInConsignment;
-      const totalRevenue = revenueFromOrders + revenueFromGifts + revenueFromConsignment;
+      // Total revenue only from orders and consignment (gifts are free)
+      const totalRevenue = revenueFromOrders + revenueFromConsignment;
 
       setStats({
         totalOrders,

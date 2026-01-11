@@ -54,7 +54,7 @@ const InventoryDashboard: React.FC = () => {
               {loading ? '...' : `$${stats.totalRevenue.toFixed(2)}`}
             </p>
             <p className="text-green-100 text-sm">
-              Orders: ${stats.revenueFromOrders.toFixed(2)} | Gifts: ${stats.revenueFromGifts.toFixed(2)} | Consignment: ${stats.revenueFromConsignment.toFixed(2)}
+              Orders: ${stats.revenueFromOrders.toFixed(2)} | Consignment: ${stats.revenueFromConsignment.toFixed(2)}
             </p>
           </div>
           <div className="p-4 bg-white bg-opacity-20 rounded-full">
@@ -103,7 +103,7 @@ const InventoryDashboard: React.FC = () => {
 
       <div className="mb-6">
         <h3 className="text-lg font-semibold text-gray-800 mb-3">Revenue Breakdown</h3>
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
           <StatCard
             icon={Package}
             title="Orders Revenue"
@@ -111,15 +111,6 @@ const InventoryDashboard: React.FC = () => {
             bgColor="bg-green-100"
             iconColor="text-green-600"
             subtitle="From customer orders"
-          />
-
-          <StatCard
-            icon={Gift}
-            title="Gifts Revenue"
-            value={`$${stats.revenueFromGifts.toFixed(2)}`}
-            bgColor="bg-purple-100"
-            iconColor="text-purple-600"
-            subtitle="From discounted/sold gifts"
           />
 
           <StatCard
