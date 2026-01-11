@@ -123,7 +123,7 @@ const ConsignmentManagement: React.FC = () => {
           <p className="text-sm text-gray-600 mt-1">
             Books in shops: <span className="font-semibold text-orange-600">{totalBooksInConsignment}</span>
             {' • '}
-            Total revenue: <span className="font-semibold text-green-600">${totalRevenue.toFixed(2)}</span>
+            Total revenue: <span className="font-semibold text-green-600">Rf {totalRevenue.toFixed(2)}</span>
           </p>
         </div>
         <button
@@ -194,7 +194,7 @@ const ConsignmentManagement: React.FC = () => {
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <span className="text-green-600 font-medium">${parseFloat(shop.total_revenue.toString()).toFixed(2)}</span>
+                      <span className="text-green-600 font-medium">Rf {parseFloat(shop.total_revenue.toString()).toFixed(2)}</span>
                     </td>
                     <td className="px-6 py-4">
                       {shop.last_payment_date ? (
@@ -366,7 +366,7 @@ const ConsignmentManagement: React.FC = () => {
                     <p className="mt-1 text-xs text-gray-500">Available: {selectedShop.books_remaining} books</p>
                   </div>
                   <div>
-                    <label className="block mb-1 text-sm font-medium text-gray-700">Revenue Received ($) *</label>
+                    <label className="block mb-1 text-sm font-medium text-gray-700">Revenue Received (Rf) *</label>
                     <input
                       type="number"
                       min="0"

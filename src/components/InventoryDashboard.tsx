@@ -51,10 +51,10 @@ const InventoryDashboard: React.FC = () => {
           <div>
             <p className="text-green-100 text-sm font-medium mb-2">TOTAL REVENUE FROM BOOK SALES</p>
             <p className="text-5xl font-bold text-white mb-1">
-              {loading ? '...' : `$${stats.totalRevenue.toFixed(2)}`}
+              {loading ? '...' : `Rf ${stats.totalRevenue.toFixed(2)}`}
             </p>
             <p className="text-green-100 text-sm">
-              Orders: ${stats.revenueFromOrders.toFixed(2)} | Consignment: ${stats.revenueFromConsignment.toFixed(2)}
+              Orders: Rf {stats.revenueFromOrders.toFixed(2)} | Consignment: Rf {stats.revenueFromConsignment.toFixed(2)}
             </p>
           </div>
           <div className="p-4 bg-white bg-opacity-20 rounded-full">
@@ -107,7 +107,7 @@ const InventoryDashboard: React.FC = () => {
           <StatCard
             icon={Package}
             title="Orders Revenue"
-            value={`$${stats.revenueFromOrders.toFixed(2)}`}
+            value={`Rf ${stats.revenueFromOrders.toFixed(2)}`}
             bgColor="bg-green-100"
             iconColor="text-green-600"
             subtitle="From customer orders"
@@ -116,7 +116,7 @@ const InventoryDashboard: React.FC = () => {
           <StatCard
             icon={Store}
             title="Consignment Revenue"
-            value={`$${stats.revenueFromConsignment.toFixed(2)}`}
+            value={`Rf ${stats.revenueFromConsignment.toFixed(2)}`}
             bgColor="bg-orange-100"
             iconColor="text-orange-600"
             subtitle="From consignment shops"

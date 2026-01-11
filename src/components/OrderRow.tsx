@@ -93,12 +93,12 @@ const OrderRow: React.FC<OrderRowProps> = ({ order, onStatusUpdate, onDeleteOrde
         <td className="px-6 py-4 text-center">{order.number_of_copies}</td>
         <td className="px-6 py-4">
           <div className="text-green-600 font-medium">
-            ${order.price_per_book?.toFixed(2) || '0.00'}
+            Rf {order.price_per_book?.toFixed(2) || '0.00'}
           </div>
         </td>
         <td className="px-6 py-4">
           <div className="text-green-600 font-semibold">
-            ${order.total_price?.toFixed(2) || '0.00'}
+            Rf {order.total_price?.toFixed(2) || '0.00'}
           </div>
         </td>
         <td className="px-6 py-4">
