@@ -206,7 +206,7 @@ const ConsignmentManagement: React.FC = () => {
                     <td className="px-6 py-4 text-center">
                       <div className="flex items-center justify-center gap-2">
                         <button
-                          onClick={() => handleRecordSale(shop)}
+                          onClick={() => handleOpenSaleModal(shop)}
                           className="p-2 text-green-600 hover:bg-green-100 rounded"
                           title="Record Sale"
                         >
