@@ -1,25 +1,31 @@
 
-import React, { useState, useCallback } from 'react';
+import React from 'react';
 import LoginPage from './components/LoginPage';
 import DashboardPage from './components/DashboardPage';
+import { useAuth } from './hooks/useAuth';
+import { Loader2 } from 'lucide-react';
 
 const App: React.FC = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const { isAuthenticated, loading, signOut } = useAuth();
 
-  const handleLoginSuccess = useCallback(() => {
-    setIsAuthenticated(true);
-  }, []);
-
-  const handleLogout = useCallback(() => {
-    setIsAuthenticated(false);
-  }, []);
+  // Show loading spinner while checking authentication
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-50">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 mx-auto text-brand-primary animate-spin" />
+          <p className="mt-4 text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen">
       {isAuthenticated ? (
-        <DashboardPage onLogout={handleLogout} />
+        <DashboardPage onLogout={signOut} />
       ) : (
-        <LoginPage onLoginSuccess={handleLoginSuccess} />
+        <LoginPage onLoginSuccess={() => {}} />
       )}
     </div>
   );

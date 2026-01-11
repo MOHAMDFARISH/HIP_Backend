@@ -1,29 +1,23 @@
-// FIX: Add reference to vite client types to resolve import.meta.env error
-/// <reference types="vite/client" />
-
 import React, { useState, useCallback } from 'react';
-import { ShieldCheck } from 'lucide-react';
+import { ShieldCheck, Loader2 } from 'lucide-react';
+import { useAuth } from '../hooks/useAuth';
 
 interface LoginPageProps {
   onLoginSuccess: () => void;
 }
 
 const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const { signIn, loading, error: authError } = useAuth();
 
-  const adminUser = import.meta.env.VITE_ADMIN_USER;
-  const adminPass = import.meta.env.VITE_ADMIN_PASS;
-
-  const handleSubmit = useCallback((e: React.FormEvent) => {
+  const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
-    if (username === adminUser && password === adminPass) {
+    const success = await signIn(email, password);
+    if (success) {
       onLoginSuccess();
-    } else {
-      setError('Invalid username or password.');
     }
-  }, [username, password, adminUser, adminPass, onLoginSuccess]);
+  }, [email, password, signIn, onLoginSuccess]);
 
 
   return (
@@ -37,17 +31,18 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-4 rounded-md shadow-sm">
             <div>
-              <label htmlFor="username" className="sr-only">Username</label>
+              <label htmlFor="email" className="sr-only">Email</label>
               <input
-                id="username"
-                name="username"
-                type="text"
-                autoComplete="username"
+                id="email"
+                name="email"
+                type="email"
+                autoComplete="email"
                 required
-                className="relative block w-full px-3 py-2 text-gray-900 placeholder-gray-500 border border-gray-300 rounded-md appearance-none focus:outline-none focus:ring-brand-secondary focus:border-brand-secondary focus:z-10 sm:text-sm"
-                placeholder="Username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                disabled={loading}
+                className="relative block w-full px-3 py-2 text-gray-900 placeholder-gray-500 border border-gray-300 rounded-md appearance-none focus:outline-none focus:ring-brand-secondary focus:border-brand-secondary focus:z-10 sm:text-sm disabled:opacity-50"
+                placeholder="Email address"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
             </div>
             <div>
@@ -58,7 +53,8 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
                 type="password"
                 autoComplete="current-password"
                 required
-                className="relative block w-full px-3 py-2 text-gray-900 placeholder-gray-500 border border-gray-300 rounded-md appearance-none focus:outline-none focus:ring-brand-secondary focus:border-brand-secondary focus:z-10 sm:text-sm"
+                disabled={loading}
+                className="relative block w-full px-3 py-2 text-gray-900 placeholder-gray-500 border border-gray-300 rounded-md appearance-none focus:outline-none focus:ring-brand-secondary focus:border-brand-secondary focus:z-10 sm:text-sm disabled:opacity-50"
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -66,14 +62,22 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
             </div>
           </div>
 
-          {error && <p className="text-sm text-center text-red-500">{error}</p>}
+          {authError && <p className="text-sm text-center text-red-500">{authError}</p>}
 
           <div>
             <button
               type="submit"
-              className="relative flex justify-center w-full px-4 py-2 text-sm font-medium text-white border border-transparent rounded-md group bg-brand-primary hover:bg-brand-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary"
+              disabled={loading}
+              className="relative flex justify-center w-full px-4 py-2 text-sm font-medium text-white border border-transparent rounded-md group bg-brand-primary hover:bg-brand-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Sign in
+              {loading ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Signing in...
+                </>
+              ) : (
+                'Sign in'
+              )}
             </button>
           </div>
         </form>
