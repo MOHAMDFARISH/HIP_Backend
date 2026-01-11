@@ -22,7 +22,7 @@ const ConsignmentManagement: React.FC = () => {
     total_revenue: 0,
     notes: '',
   });
-  const [saleData, setSaleData] = useState({ booksSold: 1, revenue: 0 });
+  const [saleData, setSaleData] = useState({ booksSold: 1, pricePerBook: 369, revenue: 369 });
   const [restockData, setRestockData] = useState({ additionalBooks: 1 });
 
   useEffect(() => {
@@ -80,7 +80,7 @@ const ConsignmentManagement: React.FC = () => {
 
   const handleOpenSaleModal = (shop: ConsignmentShop) => {
     setSelectedShop(shop);
-    setSaleData({ booksSold: 1, revenue: 0 });
+    setSaleData({ booksSold: 1, pricePerBook: 369, revenue: 369 });
     setIsSaleModalOpen(true);
   };
 
@@ -359,14 +359,65 @@ const ConsignmentManagement: React.FC = () => {
                       min="1"
                       max={selectedShop.books_remaining}
                       value={saleData.booksSold}
-                      onChange={(e) => setSaleData({ ...saleData, booksSold: parseInt(e.target.value) || 1 })}
+                      onChange={(e) => {
+                        const books = parseInt(e.target.value) || 1;
+                        const totalRevenue = books * saleData.pricePerBook;
+                        setSaleData({ ...saleData, booksSold: books, revenue: totalRevenue });
+                      }}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-primary"
                       required
                     />
                     <p className="mt-1 text-xs text-gray-500">Available: {selectedShop.books_remaining} books</p>
                   </div>
                   <div>
-                    <label className="block mb-1 text-sm font-medium text-gray-700">Revenue Received (Rf) *</label>
+                    <label className="block mb-1 text-sm font-medium text-gray-700">Price Per Book (Rf) *</label>
+                    <div className="flex gap-2 mb-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const totalRevenue = saleData.booksSold * 369;
+                          setSaleData({ ...saleData, pricePerBook: 369, revenue: totalRevenue });
+                        }}
+                        className={`flex-1 px-3 py-2 text-sm font-medium rounded-md border ${
+                          saleData.pricePerBook === 369
+                            ? 'bg-blue-600 text-white border-blue-600'
+                            : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                        }`}
+                      >
+                        Retail: Rf 369
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const totalRevenue = saleData.booksSold * 300;
+                          setSaleData({ ...saleData, pricePerBook: 300, revenue: totalRevenue });
+                        }}
+                        className={`flex-1 px-3 py-2 text-sm font-medium rounded-md border ${
+                          saleData.pricePerBook === 300
+                            ? 'bg-green-600 text-white border-green-600'
+                            : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                        }`}
+                      >
+                        Wholesale: Rf 300
+                      </button>
+                    </div>
+                    <input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      value={saleData.pricePerBook}
+                      onChange={(e) => {
+                        const price = parseFloat(e.target.value) || 0;
+                        const totalRevenue = saleData.booksSold * price;
+                        setSaleData({ ...saleData, pricePerBook: price, revenue: totalRevenue });
+                      }}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-primary"
+                      required
+                    />
+                    <p className="mt-1 text-xs text-gray-500">Or enter custom price</p>
+                  </div>
+                  <div>
+                    <label className="block mb-1 text-sm font-medium text-gray-700">Total Revenue (Rf) *</label>
                     <input
                       type="number"
                       min="0"
@@ -376,6 +427,7 @@ const ConsignmentManagement: React.FC = () => {
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-primary"
                       required
                     />
+                    <p className="mt-1 text-xs text-gray-500">Auto-calculated, or enter manually</p>
                   </div>
                 </div>
                 <div className="flex justify-end gap-2 mt-6">
