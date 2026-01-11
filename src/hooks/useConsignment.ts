@@ -105,12 +105,18 @@ export const useConsignment = () => {
 
       if (fetchError) throw fetchError;
 
+      // Calculate new values
+      const newBooksSold = shop.books_sold + booksSold;
+      const newTotalRevenue = parseFloat(shop.total_revenue.toString()) + revenue;
+      const newBooksRemaining = shop.books_placed - newBooksSold;
+
       // Update with new values
       const { error: updateError } = await supabase
         .from('consignment_shops')
         .update({
-          books_sold: shop.books_sold + booksSold,
-          total_revenue: shop.total_revenue + revenue,
+          books_sold: newBooksSold,
+          books_remaining: newBooksRemaining,
+          total_revenue: newTotalRevenue,
           last_payment_date: new Date().toISOString(),
           updated_at: new Date().toISOString()
         })
@@ -137,11 +143,16 @@ export const useConsignment = () => {
 
       if (fetchError) throw fetchError;
 
+      // Calculate new values
+      const newBooksPlaced = shop.books_placed + additionalBooks;
+      const newBooksRemaining = newBooksPlaced - shop.books_sold;
+
       // Update with new values
       const { error: updateError } = await supabase
         .from('consignment_shops')
         .update({
-          books_placed: shop.books_placed + additionalBooks,
+          books_placed: newBooksPlaced,
+          books_remaining: newBooksRemaining,
           updated_at: new Date().toISOString()
         })
         .eq('id', id);
