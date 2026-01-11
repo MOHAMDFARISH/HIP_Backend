@@ -45,11 +45,29 @@ const InventoryDashboard: React.FC = () => {
         </div>
       )}
 
+      {/* Featured Revenue Card */}
+      <div className="mb-6 p-8 bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl shadow-lg">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-green-100 text-sm font-medium mb-2">TOTAL REVENUE FROM BOOK SALES</p>
+            <p className="text-5xl font-bold text-white mb-1">
+              {loading ? '...' : `$${stats.totalRevenue.toFixed(2)}`}
+            </p>
+            <p className="text-green-100 text-sm">
+              Orders: ${stats.revenueFromOrders.toFixed(2)} | Gifts: ${stats.revenueFromGifts.toFixed(2)} | Consignment: ${stats.revenueFromConsignment.toFixed(2)}
+            </p>
+          </div>
+          <div className="p-4 bg-white bg-opacity-20 rounded-full">
+            <DollarSign className="w-16 h-16 text-white" />
+          </div>
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 gap-6 mb-6 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard
           icon={Book}
           title="Total Books Distributed"
-          value={stats.totalBooksInInventory}
+          value={stats.totalBooksDistributed}
           bgColor="bg-blue-100"
           iconColor="text-blue-600"
           subtitle="Sold + Gifted + In Consignment"
@@ -83,6 +101,38 @@ const InventoryDashboard: React.FC = () => {
         />
       </div>
 
+      <div className="mb-6">
+        <h3 className="text-lg font-semibold text-gray-800 mb-3">Revenue Breakdown</h3>
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <StatCard
+            icon={Package}
+            title="Orders Revenue"
+            value={`$${stats.revenueFromOrders.toFixed(2)}`}
+            bgColor="bg-green-100"
+            iconColor="text-green-600"
+            subtitle="From customer orders"
+          />
+
+          <StatCard
+            icon={Gift}
+            title="Gifts Revenue"
+            value={`$${stats.revenueFromGifts.toFixed(2)}`}
+            bgColor="bg-purple-100"
+            iconColor="text-purple-600"
+            subtitle="From discounted/sold gifts"
+          />
+
+          <StatCard
+            icon={Store}
+            title="Consignment Revenue"
+            value={`$${stats.revenueFromConsignment.toFixed(2)}`}
+            bgColor="bg-orange-100"
+            iconColor="text-orange-600"
+            subtitle="From consignment shops"
+          />
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
         <StatCard
           icon={AlertCircle}
@@ -94,21 +144,21 @@ const InventoryDashboard: React.FC = () => {
         />
 
         <StatCard
-          icon={DollarSign}
-          title="Consignment Revenue"
-          value={`$${stats.revenueFromConsignment.toFixed(2)}`}
-          bgColor="bg-emerald-100"
-          iconColor="text-emerald-600"
-          subtitle="Total earned from shops"
-        />
-
-        <StatCard
           icon={TrendingUp}
           title="Total Orders"
           value={stats.totalOrders}
           bgColor="bg-indigo-100"
           iconColor="text-indigo-600"
           subtitle="All time orders"
+        />
+
+        <StatCard
+          icon={Book}
+          title="Books in Stock"
+          value={stats.totalBooksInStock}
+          bgColor="bg-cyan-100"
+          iconColor="text-cyan-600"
+          subtitle="Available inventory"
         />
       </div>
 
@@ -118,19 +168,19 @@ const InventoryDashboard: React.FC = () => {
           <div className="flex items-center justify-between p-3 bg-white rounded-lg">
             <span className="text-sm font-medium text-gray-600">Customer Orders</span>
             <span className="text-lg font-bold text-green-600">
-              {loading ? '...' : `${((stats.totalBooksSold / stats.totalBooksInInventory) * 100 || 0).toFixed(1)}%`}
+              {loading ? '...' : `${((stats.totalBooksSold / stats.totalBooksDistributed) * 100 || 0).toFixed(1)}%`}
             </span>
           </div>
           <div className="flex items-center justify-between p-3 bg-white rounded-lg">
             <span className="text-sm font-medium text-gray-600">Gifts Given</span>
             <span className="text-lg font-bold text-purple-600">
-              {loading ? '...' : `${((stats.totalBooksGifted / stats.totalBooksInInventory) * 100 || 0).toFixed(1)}%`}
+              {loading ? '...' : `${((stats.totalBooksGifted / stats.totalBooksDistributed) * 100 || 0).toFixed(1)}%`}
             </span>
           </div>
           <div className="flex items-center justify-between p-3 bg-white rounded-lg">
             <span className="text-sm font-medium text-gray-600">In Shops</span>
             <span className="text-lg font-bold text-orange-600">
-              {loading ? '...' : `${((stats.totalBooksInConsignment / stats.totalBooksInInventory) * 100 || 0).toFixed(1)}%`}
+              {loading ? '...' : `${((stats.totalBooksInConsignment / stats.totalBooksDistributed) * 100 || 0).toFixed(1)}%`}
             </span>
           </div>
         </div>
