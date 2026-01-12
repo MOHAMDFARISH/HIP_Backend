@@ -42,17 +42,27 @@ export const useBlogPosts = () => {
 
   const createBlogPost = useCallback(async (blogPost: Partial<BlogPost>): Promise<boolean> => {
     try {
+      // Debug: Check auth status
+      const { data: { session } } = await supabase.auth.getSession();
+      console.log('Creating blog post - Auth status:', {
+        isAuthenticated: !!session,
+        userId: session?.user?.id,
+        role: session?.user?.role,
+      });
+
       const { error } = await supabase
         .from('blog_posts')
         .insert([blogPost]);
 
       if (error) {
+        console.error('Blog post creation error:', error);
         throw error;
       }
 
       await fetchBlogPosts();
       return true;
     } catch (err: any) {
+      console.error('Failed to create blog post:', err);
       setError(err.message || 'Failed to create blog post.');
       return false;
     }
