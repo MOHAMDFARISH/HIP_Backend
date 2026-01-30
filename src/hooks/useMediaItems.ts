@@ -41,17 +41,27 @@ export const useMediaItems = () => {
 
   const createMediaItem = useCallback(async (mediaItem: Partial<MediaItem>): Promise<boolean> => {
     try {
+      // Debug: Check auth status
+      const { data: { session } } = await supabase.auth.getSession();
+      console.log('Creating media item - Auth status:', {
+        isAuthenticated: !!session,
+        userId: session?.user?.id,
+        role: session?.user?.role,
+      });
+
       const { error } = await supabase
         .from('media_items')
         .insert([mediaItem]);
 
       if (error) {
+        console.error('Media item creation error:', error);
         throw error;
       }
 
       await fetchMediaItems();
       return true;
     } catch (err: any) {
+      console.error('Failed to create media item:', err);
       setError(err.message || 'Failed to create media item.');
       return false;
     }
@@ -59,12 +69,22 @@ export const useMediaItems = () => {
 
   const updateMediaItem = useCallback(async (id: string, updates: Partial<MediaItem>): Promise<boolean> => {
     try {
+      // Debug: Check auth status
+      const { data: { session } } = await supabase.auth.getSession();
+      console.log('Updating media item - Auth status:', {
+        isAuthenticated: !!session,
+        userId: session?.user?.id,
+        role: session?.user?.role,
+        mediaItemId: id,
+      });
+
       const { error } = await supabase
         .from('media_items')
         .update({ ...updates, updated_at: new Date().toISOString() })
         .eq('id', id);
 
       if (error) {
+        console.error('Media item update error:', error);
         throw error;
       }
 
@@ -75,6 +95,7 @@ export const useMediaItems = () => {
       );
       return true;
     } catch (err: any) {
+      console.error('Failed to update media item:', err);
       setError(err.message || 'Failed to update media item.');
       return false;
     }

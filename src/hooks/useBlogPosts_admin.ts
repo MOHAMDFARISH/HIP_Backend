@@ -1,8 +1,10 @@
+// Admin version of useBlogPosts hook - uses service role key to bypass RLS
+// Use this for admin operations where you need full access to blog posts
 import { useState, useCallback } from 'react';
-import { supabase } from '../services/supabase';
+import { supabaseAdmin } from '../services/supabase_admin';
 import { BlogPost } from '../types';
 
-export const useBlogPosts = () => {
+export const useBlogPostsAdmin = () => {
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -11,7 +13,7 @@ export const useBlogPosts = () => {
     setLoading(true);
     setError(null);
     try {
-      let query = supabase
+      let query = supabaseAdmin
         .from('blog_posts')
         .select('*')
         .order('created_at', { ascending: false });
@@ -42,35 +44,26 @@ export const useBlogPosts = () => {
 
   const createBlogPost = useCallback(async (blogPost: Partial<BlogPost>): Promise<boolean> => {
     try {
-      // Debug: Check auth status
-      const { data: { session } } = await supabase.auth.getSession();
-      console.log('Creating blog post - Auth status:', {
-        isAuthenticated: !!session,
-        userId: session?.user?.id,
-        role: session?.user?.role,
-      });
-
-      const { error } = await supabase
+      const { error } = await supabaseAdmin
         .from('blog_posts')
         .insert([blogPost]);
 
       if (error) {
-        console.error('Blog post creation error:', error);
         throw error;
       }
 
       await fetchBlogPosts();
       return true;
     } catch (err: any) {
-      console.error('Failed to create blog post:', err);
       setError(err.message || 'Failed to create blog post.');
+      console.error('Create blog post error:', err);
       return false;
     }
   }, [fetchBlogPosts]);
 
   const updateBlogPost = useCallback(async (id: string, updates: Partial<BlogPost>): Promise<boolean> => {
     try {
-      const { error } = await supabase
+      const { error } = await supabaseAdmin
         .from('blog_posts')
         .update({ ...updates, updated_date: new Date().toISOString() })
         .eq('id', id);
@@ -87,13 +80,14 @@ export const useBlogPosts = () => {
       return true;
     } catch (err: any) {
       setError(err.message || 'Failed to update blog post.');
+      console.error('Update blog post error:', err);
       return false;
     }
   }, []);
 
   const deleteBlogPost = useCallback(async (id: string): Promise<boolean> => {
     try {
-      const { error } = await supabase
+      const { error } = await supabaseAdmin
         .from('blog_posts')
         .delete()
         .eq('id', id);
@@ -106,6 +100,7 @@ export const useBlogPosts = () => {
       return true;
     } catch (err: any) {
       setError(err.message || 'Failed to delete blog post.');
+      console.error('Delete blog post error:', err);
       return false;
     }
   }, []);
