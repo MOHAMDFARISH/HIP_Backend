@@ -43,17 +43,27 @@ export const useReviews = () => {
 
   const createReview = useCallback(async (review: Partial<Review>): Promise<boolean> => {
     try {
+      // Debug: Check auth status
+      const { data: { session } } = await supabase.auth.getSession();
+      console.log('Creating review - Auth status:', {
+        isAuthenticated: !!session,
+        userId: session?.user?.id,
+        role: session?.user?.role,
+      });
+
       const { error } = await supabase
         .from('reviews')
         .insert([review]);
 
       if (error) {
+        console.error('Review creation error:', error);
         throw error;
       }
 
       await fetchReviews();
       return true;
     } catch (err: any) {
+      console.error('Failed to create review:', err);
       setError(err.message || 'Failed to create review.');
       return false;
     }
@@ -61,12 +71,23 @@ export const useReviews = () => {
 
   const updateReview = useCallback(async (id: string, updates: Partial<Review>): Promise<boolean> => {
     try {
+      // Debug: Check auth status
+      const { data: { session } } = await supabase.auth.getSession();
+      console.log('Updating review - Auth status:', {
+        isAuthenticated: !!session,
+        userId: session?.user?.id,
+        role: session?.user?.role,
+        reviewId: id,
+        updates: updates,
+      });
+
       const { error } = await supabase
         .from('reviews')
         .update({ ...updates, updated_at: new Date().toISOString() })
         .eq('id', id);
 
       if (error) {
+        console.error('Review update error:', error);
         throw error;
       }
 
@@ -77,6 +98,7 @@ export const useReviews = () => {
       );
       return true;
     } catch (err: any) {
+      console.error('Failed to update review:', err);
       setError(err.message || 'Failed to update review.');
       return false;
     }
