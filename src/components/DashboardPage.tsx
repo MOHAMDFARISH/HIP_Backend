@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { LogOut, BookOpen, Package, FileText, Video, MessageSquare, BarChart3, Gift, Store } from 'lucide-react';
+import { LogOut, BookOpen, Package, FileText, Video, MessageSquare, BarChart3, Gift, Store, Globe } from 'lucide-react';
 import OrdersManagement from './OrdersManagement';
 import BlogPostsManagement from './BlogPostsManagement';
 import MediaManagement from './MediaManagement';
@@ -7,12 +7,13 @@ import ReviewsManagement from './ReviewsManagement';
 import InventoryDashboard from './InventoryDashboard';
 import GiftsManagement from './GiftsManagement';
 import ConsignmentManagement from './ConsignmentManagement';
+import PageMetadataManagement from './PageMetadataManagement';
 
 interface DashboardPageProps {
   onLogout: () => void;
 }
 
-type TabType = 'inventory' | 'orders' | 'gifts' | 'consignment' | 'blog' | 'media' | 'reviews';
+type TabType = 'inventory' | 'orders' | 'gifts' | 'consignment' | 'blog' | 'media' | 'reviews' | 'metadata';
 
 const DashboardPage: React.FC<DashboardPageProps> = ({ onLogout }) => {
   const [activeTab, setActiveTab] = useState<TabType>('inventory');
@@ -25,6 +26,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onLogout }) => {
     { id: 'blog' as TabType, label: 'Blog', icon: FileText },
     { id: 'media' as TabType, label: 'Media', icon: Video },
     { id: 'reviews' as TabType, label: 'Reviews', icon: MessageSquare },
+    { id: 'metadata' as TabType, label: 'SEO', icon: Globe },
   ];
 
   return (
@@ -76,6 +78,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onLogout }) => {
           {activeTab === 'blog' && <BlogPostsManagement />}
           {activeTab === 'media' && <MediaManagement />}
           {activeTab === 'reviews' && <ReviewsManagement />}
+          {activeTab === 'metadata' && <PageMetadataManagement />}
         </div>
       </div>
     </div>

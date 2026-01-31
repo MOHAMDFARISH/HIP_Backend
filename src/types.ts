@@ -147,3 +147,28 @@ export interface InventoryStats {
   revenueFromConsignment: number;
   totalRevenue: number;
 }
+
+export interface PageMetadata {
+  id: string;
+  page_id: string;
+  page_name: string;
+  page_title: string;
+  meta_description: string | null;
+  meta_keywords: string[];
+  og_title: string | null;
+  og_description: string | null;
+  og_image: string | null;
+  og_type: string;
+  twitter_card: string;
+  twitter_title: string | null;
+  twitter_description: string | null;
+  twitter_image: string | null;
+  canonical_url: string | null;
+  favicon_url: string | null;
+  robots: string;
+  structured_data: any | null;
+  custom_head_tags: string | null;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string | null;
+}
